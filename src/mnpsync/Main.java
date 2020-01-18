@@ -24,6 +24,8 @@ public class Main {
                 Merge.merge();
             } else if ("sync".equals(args[0])) {
                 Sync.sync();
+            } else {
+                System.out.println("未知命令参数");
             }
         }
     }

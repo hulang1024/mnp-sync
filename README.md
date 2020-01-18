@@ -1,12 +1,12 @@
 # 部署
-1. 将mnp-sync.jar、config.properties拷贝到主机上同个目录。
+1. 将mnp-sync.jar、config.properties拷贝到服务器上。
 2. 安装redis。
 3. 编辑config.properties，配置redis服务器等相关信息。
 
 ## 配置说明
 属性名|含义
 -|-
-redis_server.ip   |  数据同步redis服务器的IP
+redis_server.ip   |  数据同步redis服务器的IP 
 redis_server.port |  数据同步redis服务器的端口
 redis_cli         |  本地redis-cli的路径
 file_api.base_url |  携号转网服务数据拉取HTTP API的URL
@@ -18,6 +18,9 @@ file_api.base_url |  携号转网服务数据拉取HTTP API的URL
 ```shell
 java -Dfile.encoding=UTF8 -Dbase.dir=[jar所在根目录] -jar mnp-sync.jar [可选参数...]
 ````
+java -D参数说明：
+* base.dir  
+  config.properties、temp、logs等文件目录（这些文件说明见下方）的根目录。
 
 可选参数和功能说明：
 * 可选的参数为空  
@@ -36,10 +39,12 @@ java -Dfile.encoding=UTF8 -Dbase.dir=[jar所在根目录] -jar mnp-sync.jar [可
   读取临时目录中所有zip文件，然后为每个zip文件转换生成一个redis命令文件，最后发送给redis服务器。
 
 ## 文件介绍
+* config.properties  
+  配置文件。
 * /temp  
   程序生成的临时目录。从服务器下载的文件，合并之后的文件，和生成的redis命令文本文件都会放在此处。
 * /logs  
-  日志。
+  程序生成的日志目录。
 
 
 # 定时任务
