@@ -6,7 +6,7 @@
 ## 配置说明
 属性名|含义
 -|-
-redis_server.ip   |  数据同步redis服务器的IP 
+redis_server.host |  数据同步redis服务器的主机名
 redis_server.port |  数据同步redis服务器的端口
 redis_cli         |  本地redis-cli的路径
 file_api.base_url |  携号转网服务数据拉取HTTP API的URL

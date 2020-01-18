@@ -90,7 +90,7 @@ public class Sync {
 
         Process process = Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c",
             "cat " + redisCommandsFile.getAbsolutePath() +
-            " | " + Config.getString("redis_cli") + " -h " + Config.getString("redis_server.ip") +
+            " | " + Config.getString("redis_cli") + " -h " + Config.getString("redis_server.host") +
             " -p " + Config.getString("redis_server.port") +
             " --pipe"});
 
