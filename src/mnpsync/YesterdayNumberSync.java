@@ -20,11 +20,12 @@ public class YesterdayNumberSync {
         int partCount = Pull.pullByDate(dateString);
         if (partCount == 0) {
             logger.info("获取文件或文件内容失败");
+            return;
         }
 
         Merge.merge();
 
-        SyncResult result = Sync.sync();
+        Sync.Result result = Sync.sync();
         if (result.success) {
             System.out.printf("处理完成 总共耗时%.2f秒\n", (System.currentTimeMillis() - startTime) / 1000f);
             logger.info("已处理" + dateString + "的" + result.numberTotal + "个号码记录");

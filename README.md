@@ -1,5 +1,5 @@
 # 部署
-1. 将mnp-sync.jar、config.properties拷贝到主机上。
+1. 将mnp-sync.jar、config.properties拷贝到主机上同个目录。
 2. 安装redis。
 3. 编辑config.properties，配置redis服务器等相关信息。
 
@@ -8,7 +8,7 @@
 -|-
 redis_server.ip   |  数据同步redis服务器的IP
 redis_server.port |  数据同步redis服务器的端口
-redis_cli_path    |  本地redis-cli的路径
+redis_cli         |  本地redis-cli的路径
 file_api.base_url |  携号转网服务数据拉取HTTP API的URL
 
 
@@ -16,13 +16,10 @@ file_api.base_url |  携号转网服务数据拉取HTTP API的URL
 
 ## 命令行用法
 ```shell
-java -jar mnp-sync.jar [可选参数...]
+java -Dfile.encoding=UTF8 -Dbase.dir=[jar所在根目录] -jar mnp-sync.jar [可选参数...]
 ````
-如果提示编码错误，需带上一个参数：
-```shell
-java -Dfile.encoding=UTF8 -jar mnp-sync.jar [可选参数...]
-````
-可选参数
+
+可选参数和功能说明：
 * 可选的参数为空  
   处理昨日数据。
 
@@ -49,6 +46,6 @@ java -Dfile.encoding=UTF8 -jar mnp-sync.jar [可选参数...]
 每天上午6点处理昨日数据。  
 使用crontab实现: ` crontab -e`, 增加如下代码：
 ```shell
-0 6 * * * /pathto/java -Dfile.encoding=UTF8 -jar /pathto/mnp-sync.jar
+0 6 * * * /pathto/java -Dfile.encoding=UTF8 -Dbase.dir=/mnp-sync.jar dir/  -jar /pathto/mnp-sync.jar
 ```
-注意java和mnp-sync.jar的位置写绝对路径。
+注意java写绝对路径。

@@ -3,9 +3,11 @@ package mnpsync;
 import java.io.File;
 
 public class TempDirOps {
-    public static final String tempDirName = Config.c.getString("base_path") + "/temp/";
+    public static final String tempDirName;
 
     static {
+        String baseUrl = Config.getString("base.dir");
+        tempDirName = baseUrl + (baseUrl.endsWith("/") ? "" : "/") + "temp/";
         File tempDir = new File(tempDirName);
         if (!tempDir.exists()) {
             tempDir.mkdirs();
@@ -19,5 +21,4 @@ public class TempDirOps {
             file.delete();
         }
     }
-
 }

@@ -9,10 +9,15 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 public class Sync {
-    public static SyncResult sync() throws Exception {
+    public static class Result {
+        public boolean success;
+        public int numberTotal;
+    }
+    
+    public static Sync.Result sync() throws Exception {
         System.out.println("同步开始");
         long startTime = System.currentTimeMillis();
-        SyncResult result = new SyncResult();
+        Sync.Result result = new Sync.Result();
         result.success = true;
         File tempDir = new File(TempDirOps.tempDirName);
         int count = 1;
@@ -25,7 +30,7 @@ public class Sync {
         System.out.println("发现" + files.size() + "个合并文件");
         for (File file : files) {
             System.out.printf("处理第%2d个文件 %-14s", count++, file.getName());
-            SyncResult ret = readSingleMergeFilesAndSync(file);
+            Sync.Result ret = readSingleMergeFilesAndSync(file);
             System.out.printf(" 完成 %7d个号码记录\n", ret.numberTotal);
             result.numberTotal += ret.numberTotal;
             if (!ret.success) {
@@ -38,8 +43,8 @@ public class Sync {
         return result;
     }
 
-    public static SyncResult readSingleMergeFilesAndSync(File file) throws Exception {
-        SyncResult result = new SyncResult();
+    public static Sync.Result readSingleMergeFilesAndSync(File file) throws Exception {
+        Sync.Result result = new Sync.Result();
         String fileName = file.getName();
         if (fileName.startsWith("\\")) {
             fileName = fileName.substring(1, fileName.indexOf("."));
@@ -85,8 +90,8 @@ public class Sync {
 
         Process process = Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c",
             "cat " + redisCommandsFile.getAbsolutePath() +
-            " | " + Config.c.getString("redis_cli_path") + " -h " + Config.c.getString("redis_server.ip") +
-            " -p " + Config.c.getString("redis_server.port") +
+            " | " + Config.getString("redis_cli") + " -h " + Config.getString("redis_server.ip") +
+            " -p " + Config.getString("redis_server.port") +
             " --pipe"});
 
         result.success = process.waitFor() == 0;

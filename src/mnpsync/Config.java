@@ -7,23 +7,25 @@ import org.apache.commons.configuration2.builder.fluent.Parameters;
 import java.io.File;
 
 public class Config {
-    public static PropertiesConfiguration c;
+    private static PropertiesConfiguration config;
 
     public static void init() {
+        if (System.getProperty("base.dir") == null) {
+            System.setProperty("base.dir", System.getProperty("user.dir"));
+        }
         try {
-            Parameters params = new Parameters();
-            c = new FileBasedConfigurationBuilder<>(
-                PropertiesConfiguration.class).configure(
-                params.properties().setFile(new File(getProgramPath(),"config.properties"))).getConfiguration();
+            config = new FileBasedConfigurationBuilder<>(PropertiesConfiguration.class)
+                .configure(new Parameters().properties()
+                    .setFile(new File(System.getProperty("base.dir"),"config.properties")))
+                .getConfiguration();
 
-            c.addProperty("base_path", getProgramPath());
+            config.addProperty("base.dir", System.getProperty("base.dir"));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
-    public static String getProgramPath() {
-        String path = Config.class.getProtectionDomain().getCodeSource().getLocation().getFile();
-        return path.substring(0, path.lastIndexOf("/"));
+    public static String getString(String key) {
+        return config.getString(key);
     }
 }

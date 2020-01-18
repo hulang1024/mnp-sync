@@ -11,16 +11,9 @@ import org.apache.http.impl.client.HttpClients;
 import java.util.List;
 import java.util.Map;
 
-/**
- * 请求文件
- */
 public class FileApis {
     private static CloseableHttpClient httpClient = HttpClients.createDefault();
-    private static String baseUrl;
-
-    public static void init() {
-        baseUrl = Config.c.getString("file_api.base_url");
-    }
+    private static String baseUrl = Config.getString("file_api.base_url");
 
     public static Integer[] pullFileBytes(String filename) {
         try {

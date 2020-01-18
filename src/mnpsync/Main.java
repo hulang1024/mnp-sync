@@ -10,7 +10,6 @@ public class Main {
         }
 
         Config.init();
-        FileApis.init();
 
         if (args.length == 0) {
             YesterdayNumberSync.execute();
