@@ -16,7 +16,7 @@ file_api.base_url |  携号转网服务数据拉取HTTP API的URL
 
 ## 命令行用法
 ```shell
-java -Dfile.encoding=UTF8 -Dbase.dir=[jar所在根目录] -jar mnp-sync.jar [可选参数...]
+java -Dfile.encoding=UTF8 -Dbase.dir=[...] -jar mnp-sync.jar [可选参数...]
 ````
 java -D参数说明：
 * base.dir  
