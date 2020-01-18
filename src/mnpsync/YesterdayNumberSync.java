@@ -1,5 +1,6 @@
 package mnpsync;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.log4j.Logger;
 
 import java.text.SimpleDateFormat;
@@ -11,7 +12,7 @@ public class YesterdayNumberSync {
 
     public static void execute() throws Exception {
         System.out.println("处理开始\n");
-        long startTime = System.currentTimeMillis();
+        StopWatch watch = StopWatch.createStarted();
 
         Calendar yesterday = Calendar.getInstance();
         yesterday.add(Calendar.DATE, -1);
@@ -27,7 +28,7 @@ public class YesterdayNumberSync {
 
         Sync.Result result = Sync.sync();
         if (result.success) {
-            System.out.printf("处理完成 总共耗时%.2f秒\n", (System.currentTimeMillis() - startTime) / 1000f);
+            System.out.printf("处理完成 耗时%.2f秒\n", watch.getTime() / 1000f);
             logger.info("已处理" + dateString + "的" + result.numberTotal + "个号码记录");
         } else {
             logger.info("失败");

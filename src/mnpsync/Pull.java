@@ -1,5 +1,7 @@
 package mnpsync;
 
+import org.apache.commons.lang3.time.StopWatch;
+
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -8,6 +10,7 @@ import java.util.List;
 public class Pull {
     public static int pullByDate(String date) throws Exception {
         System.out.printf("拉取日期%s文件开始\n", date);
+        StopWatch watch = StopWatch.createStarted();
         TempDirOps.clean();
         int partCount = 0;
         Integer[] fileBytes;
@@ -27,7 +30,7 @@ public class Pull {
             }
         } while (fileBytes != null);
         if (partCount > 0) {
-            System.out.printf("拉取完成 总共%d个文件\n\n", partCount);
+            System.out.printf("拉取完成 总共%d个文件,耗时%.2f秒\n\n", partCount, watch.getTime() / 1000f);
         }
         return partCount;
     }

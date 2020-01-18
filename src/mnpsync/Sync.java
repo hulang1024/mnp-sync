@@ -1,5 +1,7 @@
 package mnpsync;
 
+import org.apache.commons.lang3.time.StopWatch;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +18,12 @@ public class Sync {
     
     public static Sync.Result sync() throws Exception {
         System.out.println("同步开始");
-        long startTime = System.currentTimeMillis();
+        StopWatch watch = StopWatch.createStarted();
+
         Sync.Result result = new Sync.Result();
         result.success = true;
+
         File tempDir = new File(TempDirOps.tempDirName);
-        int count = 1;
         List<File> files = new ArrayList<>();
         for (File file : tempDir.listFiles()) {
             if (file.getName().endsWith(".zip")) {
@@ -28,6 +31,7 @@ public class Sync {
             }
         }
         System.out.println("发现" + files.size() + "个合并文件");
+        int count = 1;
         for (File file : files) {
             System.out.printf("处理第%2d个文件 %-14s", count++, file.getName());
             Sync.Result ret = readSingleMergeFilesAndSync(file);
@@ -38,8 +42,8 @@ public class Sync {
                 break;
             }
         }
-        System.out.printf("同步完成 总共%d个号码记录,耗时%.2f秒\n\n",
-            result.numberTotal, (System.currentTimeMillis() - startTime) / 1000f);
+        System.out.printf("同步完成 总共%d个号码记录,耗时%.2f秒\n\n", result.numberTotal, watch.getTime() / 1000f);
+
         return result;
     }
 
