@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public class Pull {
     public static int pullByDate(String date) throws Exception {
@@ -37,15 +38,15 @@ public class Pull {
 
     public static void pullAll() {
         System.out.println("拉取历史所有文件开始");
+        StopWatch watch = StopWatch.createStarted();
         TempDirOps.clean();
         System.out.println("请求文件名列表");
         List<String> filenames = FileApis.pullFileNameList();
         if (filenames == null || filenames.isEmpty()) {
             return;
         }
-        System.out.println("解析到" + filenames.size() + "个文件名");
-        filenames = filterFilename(filenames);
-        System.out.println("过滤之后有" + filenames.size() + "个文件名");
+        filenames = filterAndSortFilenames(filenames);
+        System.out.println("开始下载" + filenames.size() + "个文件");
         int count = 0;
         for (String filename : filenames) {
             ++count;
@@ -63,10 +64,10 @@ public class Pull {
             }
             System.out.println(" 完成");
         }
-        System.out.println("全部完成");
+        System.out.printf("全部完成 耗时%.2f秒\n\n", watch.getTime() / 1000f);
     }
 
-    public static List<String> filterFilename(List<String> filenames) {
+    public static List<String> filterAndSortFilenames(List<String> filenames) {
         //如果有月份文件，只保留月份文件
         List<String> result = new ArrayList<>();
         List<String> months = new ArrayList<>();
@@ -81,6 +82,16 @@ public class Pull {
                 result.add(filename);
             }
         }
+        // 按日期排序
+        Function<String, Integer> toOrderNum = filename -> {
+            int partStartIndex = filename.indexOf("_");
+            String date = filename.substring(0, partStartIndex);
+            int num = Integer.parseInt(date.length() < 7 ? date + "01" : date);
+            num += Integer.parseInt(filename.substring(partStartIndex + 1, filename.length() - 4));
+            return num;
+        };
+        result.sort((x, y) -> (int)toOrderNum.apply(x) - toOrderNum.apply(y));
+
         return result;
     }
 }

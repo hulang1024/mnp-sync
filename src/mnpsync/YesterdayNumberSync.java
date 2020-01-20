@@ -28,7 +28,8 @@ public class YesterdayNumberSync {
 
         Sync.Result result = Sync.sync();
         if (result.success) {
-            System.out.printf("处理完成 耗时%.2f秒\n", watch.getTime() / 1000f);
+            System.out.printf("处理完成 总共%d个号码记录,其中SET号码%d个,DEL号码%d个, 耗时%.2f秒\n",
+                result.numberTotal, result.setCount, result.delCount, watch.getTime() / 1000f);
             logger.info("已处理" + dateString + "的" + result.numberTotal + "个号码记录");
         } else {
             logger.info("失败");

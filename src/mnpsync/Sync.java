@@ -6,6 +6,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
@@ -13,6 +14,8 @@ import java.util.zip.ZipInputStream;
 public class Sync {
     public static class Result {
         public boolean success;
+        public int setCount;
+        public int delCount;
         public int numberTotal;
     }
     
@@ -30,24 +33,35 @@ public class Sync {
                 files.add(file);
             }
         }
-        System.out.println("发现" + files.size() + "个合并文件");
+
+        // 按日期排序
+        Function<File, Integer> toOrderNum = file -> {
+            String date = file.getName().substring(1, file.getName().length() - 4);
+            return Integer.parseInt(date.length() < 7 ? date + "01" : date);
+        };
+        files.sort((x, y) -> (int)toOrderNum.apply(x) - toOrderNum.apply(y));
+
+        System.out.println("发现" + files.size() + "个zip文件");
         int count = 1;
         for (File file : files) {
-            System.out.printf("处理第%2d个文件 %-14s", count++, file.getName());
-            Sync.Result ret = readSingleMergeFilesAndSync(file);
-            System.out.printf(" 完成 %7d个号码记录\n", ret.numberTotal);
+            System.out.printf("同步第%2d个文件 %-14s", count++, file.getName());
+            Sync.Result ret = syncSingleMergeFile(file);
+            System.out.printf(" 完成 %7d 个号码记录\n", ret.numberTotal);
             result.numberTotal += ret.numberTotal;
+            result.setCount += ret.setCount;
+            result.delCount += ret.delCount;
             if (!ret.success) {
                 result.success = false;
                 break;
             }
         }
-        System.out.printf("同步完成 总共%d个号码记录,耗时%.2f秒\n\n", result.numberTotal, watch.getTime() / 1000f);
+        System.out.printf("同步完成 总共%d个号码记录,其中SET号码%d个,DEL号码%d个,耗时%.2f秒\n\n",
+            result.numberTotal, result.setCount, result.delCount, watch.getTime() / 1000f);
 
         return result;
     }
 
-    public static Sync.Result readSingleMergeFilesAndSync(File file) throws Exception {
+    public static Sync.Result syncSingleMergeFile(File file) throws Exception {
         Sync.Result result = new Sync.Result();
         String fileName = file.getName();
         if (fileName.startsWith("\\")) {
@@ -81,10 +95,12 @@ public class Sync {
                             }
                             redisCommandsFileWriter.write(new StringBuilder("set ")
                                 .append(key).append(" ").append(val).append("\r\n").toString());
+                            result.setCount++;
                             break;
                         case "D":
                             redisCommandsFileWriter.write(new StringBuilder("del ")
                                 .append(key).append("\r\n").toString());
+                            result.delCount++;
                             break;
                     }
                 } catch (IOException e) {}
